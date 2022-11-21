@@ -28,10 +28,12 @@ import org.apache.streampark.console.base.util.JacksonUtils;
 import org.apache.streampark.console.core.entity.Application;
 import org.apache.streampark.console.core.entity.FlinkCluster;
 import org.apache.streampark.console.core.entity.FlinkEnv;
+import org.apache.streampark.console.core.entity.KafkaAlarm;
 import org.apache.streampark.console.core.enums.FlinkAppState;
 import org.apache.streampark.console.core.enums.LaunchState;
 import org.apache.streampark.console.core.enums.OptionState;
 import org.apache.streampark.console.core.enums.StopFrom;
+import org.apache.streampark.console.core.kafka.GetKafkaLag;
 import org.apache.streampark.console.core.metrics.flink.CheckPoints;
 import org.apache.streampark.console.core.metrics.flink.JobsOverview;
 import org.apache.streampark.console.core.metrics.flink.Overview;
@@ -48,6 +50,7 @@ import com.github.benmanes.caffeine.cache.Caffeine;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.http.client.config.RequestConfig;
+import org.apache.streampark.console.core.service.alert.KafkaAlarmService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
@@ -138,6 +141,9 @@ public class FlinkTrackingTask {
     @Autowired
     private CheckpointProcessor checkpointProcessor;
 
+    @Autowired
+    private KafkaAlarmService kafkaAlarmService;
+
     private static final Map<Long, FlinkEnv> FLINK_ENV_MAP = new ConcurrentHashMap<>(0);
 
     private static final Map<Long, FlinkCluster> FLINK_CLUSTER_MAP = new ConcurrentHashMap<>(0);
@@ -184,7 +190,6 @@ public class FlinkTrackingTask {
      */
     @Scheduled(fixedDelay = 1000)
     public void execute() {
-
         // The application has been started at the first time, or the front-end is operating start/stop, need to return status info immediately.
         if (lastTrackTime == null || !OPTIONING.isEmpty()) {
             tracking();
@@ -196,7 +201,17 @@ public class FlinkTrackingTask {
             tracking();
         }
     }
-
+    @Scheduled(fixedRate = 5000)
+    public void executeSch(){
+        System.out.println("查询kafka的lag值。。。。。。。");
+        // 要查询的消费组
+    /*    String groupID = "cc";
+        // 消费组中监控的topic
+        String topic = "mykafka_1";
+        long l = GetKafkaLag.countByArgs(groupID, topic);*/
+       List<KafkaAlarm> kafkaAlarm = kafkaAlarmService.getKafkaAlarm();
+        System.out.println("kafka shitilei="+kafkaAlarm.toString()+",sieze="+kafkaAlarm.size());
+    }
     private void tracking() {
         lastTrackTime = System.currentTimeMillis();
         for (Map.Entry<Long, Application> entry : TRACKING_MAP.entrySet()) {

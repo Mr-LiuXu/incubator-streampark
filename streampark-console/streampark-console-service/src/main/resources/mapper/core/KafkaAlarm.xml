@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+
+    Licensed to the Apache Software Foundation (ASF) under one or more
+    contributor license agreements.  See the NOTICE file distributed with
+    this work for additional information regarding copyright ownership.
+    The ASF licenses this file to You under the Apache License, Version 2.0
+    (the "License"); you may not use this file except in compliance with
+    the License.  You may obtain a copy of the License at
+
+       https://www.apache.org/licenses/LICENSE-2.0
+
+    Unless required by applicable law or agreed to in writing, software
+    distributed under the License is distributed on an "AS IS" BASIS,
+    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+    See the License for the specific language governing permissions and
+    limitations under the License.
+
+-->
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.apache.streampark.console.core.mapper.KafkaAlarmMapper">
+    <resultMap id="BaseResultMap" type="org.apache.streampark.console.core.entity.KafkaAlarm">
+        <result column="id" jdbcType="BIGINT" property="id"/>
+        <result column="broker" jdbcType="VARCHAR" property="broker"/>
+        <result column="topic" jdbcType="VARCHAR" property="topic"/>
+        <result column="group_id" jdbcType="VARCHAR" property="groupId"/>
+        <result column="is_enable_security" jdbcType="VARCHAR" property="isEnableSecurity"/>
+        <result column="user_name" jdbcType="VARCHAR" property="userName"/>
+        <result column="user_pass" jdbcType="VARCHAR" property="userPass"/>
+        <result column="lag_threshold" jdbcType="VARCHAR" property="lagThreshold"/>
+        <result column="status" jdbcType="VARCHAR" property="status"/>
+        <result column="create_time" jdbcType="TIMESTAMP" property="createTime"/>
+        <result column="modify_time" jdbcType="TIMESTAMP" property="modifyTime"/>
+    </resultMap>
+
+    <select id="getKafkaAlarm" resultType="org.apache.streampark.console.core.entity.KafkaAlarm" parameterType="org.apache.streampark.console.core.entity.KafkaAlarm">
+        select t.* from t_kafka_alarm t where t.status=1;
+    </select>
+
+</mapper>
